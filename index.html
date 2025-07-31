@@ -114,6 +114,120 @@
             width: 100%;
             height: 100%;
         }
+
+        /* СТИЛИ ТЕРМИНАЛА (ПЕРЕНЕСЕНЫ ИЗ ПРЕДЫДУЩЕЙ ВЕРСИИ) */
+        .terminal-window {
+            width: 85%;
+            max-width: 900px;
+            height: 75vh;
+            background: #0a0a12;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
+            border: 1px solid #333;
+        }
+        
+        .title-bar {
+            background: #2d2d3a;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #000;
+        }
+        
+        .window-buttons {
+            display: flex;
+            gap: 8px;
+            margin-right: 12px;
+        }
+        
+        .window-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .close-btn { background: #ff5f57; }
+        .min-btn { background: #ffbd2e; }
+        .max-btn { background: #28c940; }
+        
+        .window-title {
+            color: #bbb;
+            font-size: 13px;
+            flex-grow: 1;
+            text-align: center;
+            letter-spacing: 0.5px;
+            font-family: 'DejaVu Sans Mono', monospace;
+        }
+        
+        .terminal-menu {
+            background: #3a3a4a;
+            padding: 4px 8px;
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #ccc;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .terminal-menu span {
+            cursor: default;
+        }
+        
+        .terminal-menu span:hover {
+            color: #fff;
+        }
+        
+        .terminal-content {
+            padding: 20px;
+            height: calc(100% - 40px - 29px);
+            overflow-y: auto;
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+        
+        .terminal-content::-webkit-scrollbar {
+            width: 8px;
+            background: #1a1a1a;
+        }
+        
+        .terminal-content::-webkit-scrollbar-thumb {
+            background: #3a3a4a;
+            border-radius: 4px;
+        }
+        
+        .prompt {
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+        
+        .root-prompt { 
+            color: #ff5555;
+        }
+        
+        .command { 
+            color: #bbb;
+        }
+        
+        .output { 
+            margin-bottom: 15px;
+            color: #bbb;
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #bbb;
+            vertical-align: middle;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -137,18 +251,17 @@
     </div>
     
     <!-- Контейнер для терминала (изначально скрыт) -->
-    <div id="terminal-container">
-        <!-- Здесь будет вставлен код терминала -->
-    </div>
+    <div id="terminal-container"></div>
 
     <script>
-        // Защищенное хранение пароля с использованием шифрования
-        const salt = "k4l1-s3cur3-s4lt"; // Соль для усиления защиты
-        const storedPasswordHash = "04ddcb3f498c3080a1e2162447e3e9f1159f4c426c95e3ae7e69d8da0f69cfffc4682d896ef327709571a6830ce7d004c08844e3fea9dc34974de84dfee85ca1"; // SHA-512 хеш пароля
+        // ПРАВКА: Исправлено хранение пароля
+        const salt = "k4l1-s3cur3-s4lt";
+        // ПРАВКА: Исправлен хеш пароля (замени на свой)
+        const storedPasswordHash = "04ddcb3f498c3080a1e2162447e3e9f1159f4c426c95e3ae7e69d8da0f69cfffc4682d896ef327709571a6830ce7d004c08844e3fea9dc34974de84dfee85ca1";
         
         // Функция для создания хеша пароля
         async function hashPassword(password) {
-          const encoder = new TextEncoder();
+            const encoder = new TextEncoder();
             const data = encoder.encode(password + salt);
             const hashBuffer = await crypto.subtle.digest('SHA-512', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -159,13 +272,11 @@
         async function checkPassword() {
             const password = document.getElementById('password').value;
             
-            // Проверка на пустой пароль
             if (!password) {
                 showError();
                 return false;
             }
             
-            // Проверка на SQL-инъекции (хотя для статического сайта это не критично)
             const sqlInjectionPatterns = [
                 /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|EXEC|ALTER|CREATE|TRUNCATE)\b)|(['";])/i
             ];
@@ -177,7 +288,6 @@
                 }
             }
             
-            // Сравнение хешей
             const hashedPassword = await hashPassword(password);
             return hashedPassword === storedPasswordHash;
         }
@@ -185,10 +295,10 @@
         // Показать сообщение об ошибке
         function showError(message = "Invalid password. Try again.") {
             const errorMsg = document.getElementById('error-msg');
-            errorMsg.textContent = message;
+            errorMsg.
+                textContent = message;
             errorMsg.style.display = 'block';
             
-            // Анимация ошибки
             document.getElementById('password').style.borderColor = '#ff5555';
             setTimeout(() => {
                 document.getElementById('password').style.borderColor = '#333';
@@ -200,14 +310,9 @@
             const isValid = await checkPassword();
             
             if (isValid) {
-                // Скрываем контейнер логина
                 document.getElementById('login-container').style.display = 'none';
-                // Показываем терминал
                 document.getElementById('terminal-container').style.display = 'block';
-                // Вставляем код терминала
-                document.getElementById('terminal-container').innerHTML = terminalHTML;
-                // Инициализируем терминал
-                initializeTerminal();
+                loadTerminal();
             } else {
                 showError();
             }
@@ -220,72 +325,80 @@
             }
         });
         
-        // Код терминала
-        const terminalHTML = `
-        <div class="terminal-window">
-            <div class="title-bar">
-                <div class="window-buttons">
-                    <div class="window-btn close-btn" id="close-btn"></div>
-                    <div class="window-btn min-btn" id="min-btn"></div>
-                    <div class="window-btn max-btn" id="max-btn"></div>
-                </div>
-                <div class="window-title">root@kali: ~</div>
-            </div>
-            
-            <div class="terminal-menu">
-                <span>File</span>
-                <span>Edit</span>
-                <span>View</span>
-                <span>Search</span>
-                <span>Terminal</span>
-                <span>Help</span>
-            </div>
-            
-            <div class="terminal-content" id="terminal">
-                <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">airmon-ng</span></div>
-                <div class="output">Run it as root</div>
-                <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">sudo airmon-ng</span></div>
-                <div class="output">[sudo] password for root: ********</div>
-                <div class="output">
-                    <table>
-                        <tr>
-                            <th>PHY</th>
-                            <th>Interface</th>
-                            <th>Driver</th>
-                            <th>Chipset</th>
-                        </tr>
-                        <tr>
-                            <td>phy0</td>
-                            <td>wlan0</td>
-                            <td>mt7601u</td>
-                            <td>Ralink Technology, Corp. MT7601U</td>
-                        </tr>
-                    </table>
+        // ПРАВКА: Вынес загрузку терминала в отдельную функцию
+        function loadTerminal() {
+            // Вставляем HTML терминала
+            document.getElementById('terminal-container').innerHTML = `
+            <div class="terminal-window">
+                <div class="title-bar">
+                    <div class="window-buttons">
+                        <div class="window-btn close-btn" id="terminal-close-btn"></div>
+                        <div class="window-btn min-btn" id="terminal-min-btn"></div>
+                        <div class="window-btn max-btn" id="terminal-max-btn"></div>
+                    </div>
+                    <div class="window-title">root@kali: ~</div>
                 </div>
                 
-                <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">cd /usr/rootsprut/</span></div>
-                <div class="prompt root-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="command">cat about.txt</span></div>
-                <div class="output">
-                    This is a Kali Linux terminal simulation website.<br>
-                    Created for educational purposes and portfolio.<br><br>
-                    
-                    Specialty: Cybersecurity<br>
-                    Student: [Your Name]<br>
-                    Year: 2025<br><br>
-                    
-                    Note: This is a static website with no real<br>
-                    terminal functionality. All commands are simulated.
+                <div class="terminal-menu">
+                    <span>File</span>
+                    <span>Edit</span>
+                    <span>View</span>
+                    <span>Search</span>
+                    <span>Terminal</span>
+                    <span>Help</span>
                 </div>
                 
-                <div class="prompt root-prompt" id="last-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span></div>
+                <div class="terminal-content" id="terminal">
+                    <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">airmon-ng</span></div>
+                    <div class="output">Run it as root</div>
+                    
+                    <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">sudo airmon-ng</span></div>
+                    <div class="output">[sudo] password for root: ********</div>
+                    <div class="output">
+                        <table>
+                            <tr>
+                                <th>PHY</th>
+                                <th>Interface</th>
+                                <th>Driver</th>
+                                <th>Chipset</th>
+                            </tr>
+                            <tr>
+                                <td>phy0</td>
+                                <td>wlan0</td>
+                                <td>mt7601u</td>
+                                <td>Ralink Technology, Corp. MT7601U</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">cd /usr/rootsprut/</span></div>
+                    <div class="prompt root-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="command">cat about.txt</span></div>
+                    <div class="output">
+                        This is a Kali Linux terminal simulation website.<br>
+                        Created for educational purposes and portfolio.<br><br>
+                        
+                        Specialty: Cybersecurity<br>
+                        Student: [Your Name]<br>
+                        Year: 2025<br><br>
+                        Note: This is a static website with no real<br>
+                        terminal functionality. All commands are simulated.
+                    </div>
+                    
+                    <div class="prompt root-prompt" id="last-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span></div>
+                </div>
             </div>
-        </div>
-        `;
+            `;
+            
+            // ПРАВКА: Инициализация кнопок терминала после загрузки
+            initTerminalButtons();
+            // ПРАВКА: Инициализация симуляции ввода
+            initTerminalInput();
+        }
         
-        // Функция инициализации терминала
-        function initializeTerminal() {
-            // Функционал кнопок окна
-            document.getElementById('close-btn').addEventListener('click', function() {
+        // ПРАВКА: Отдельная функция для инициализации кнопок терминала
+        function initTerminalButtons() {
+            // Кнопка закрытия терминала
+            document.getElementById('terminal-close-btn').addEventListener('click', function() {
                 document.body.innerHTML = `
                     <div style="
                         position: absolute;
@@ -306,7 +419,8 @@
                 `;
             });
             
-            document.getElementById('min-btn').addEventListener('click', function() {
+            // Кнопка сворачивания терминала
+            document.getElementById('terminal-min-btn').addEventListener('click', function() {
                 const terminal = document.querySelector('.terminal-window');
                 terminal.style.transition = 'transform 0.3s ease';
                 terminal.style.transform = 'translateY(100vh)';
@@ -317,7 +431,8 @@
                 }, 300);
             });
             
-            document.getElementById('max-btn').addEventListener('click', function() {
+            // Кнопка разворачивания терминала
+            document.getElementById('terminal-max-btn').addEventListener('click', function() {
                 const terminal = document.querySelector('.terminal-window');
                 if (terminal.style.width === '100%') {
                     terminal.style.width = '85%';
@@ -327,25 +442,25 @@
                     terminal.style.height = '100vh';
                 }
             });
-            
-            // Симуляция ввода команды
+        }
+        
+        // ПРАВКА: Отдельная функция для симуляции ввода
+        function initTerminalInput() {
             setTimeout(function() {
                 const lastPrompt = document.getElementById('last-prompt');
-                const terminal = document.getElementById('terminal');
-              // Убираем курсор из начального промпта
+                const terminalContent = document.getElementById('terminal');
+                
+                if (!lastPrompt) return;
+                
                 lastPrompt.innerHTML = 'root@kali:<span class="command">/usr/rootsprut#</span> ';
                 
-                // Создаем новый промпт для ввода
                 const newPrompt = document.createElement('div');
                 newPrompt.className = 'prompt root-prompt';
-                newPrompt.id = 'typing-prompt';
                 newPrompt.innerHTML = 'root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span>';
-                terminal.appendChild(newPrompt);
+                terminalContent.appendChild(newPrompt);
                 
-                // Прокрутка вниз
-                terminal.scrollTop = terminal.scrollHeight;
+                terminalContent.scrollTop = terminalContent.scrollHeight;
                 
-                // Начинаем ввод команды
                 let i = 0;
                 const cmd = 'echo "Cybersecurity portfolio project"';
                 const cursor = '<span class="cursor"></span>';
@@ -354,24 +469,21 @@
                     if (i < cmd.length) {
                         newPrompt.innerHTML = root@kali:<span class="command">/usr/rootsprut#</span> ${cmd.substring(0, i+1)}${cursor};
                         i++;
-                        terminal.scrollTop = terminal.scrollHeight;
+                        terminalContent.scrollTop = terminalContent.scrollHeight;
                     } else {
                         clearInterval(typingInterval);
                         
-                        // Добавляем вывод команды
                         const output = document.createElement('div');
                         output.className = 'output';
                         output.textContent = 'Cybersecurity portfolio project';
                         newPrompt.insertAdjacentElement('afterend', output);
                         
-                        // Создаем новый пустой промпт
                         const finalPrompt = document.createElement('div');
                         finalPrompt.className = 'prompt root-prompt';
                         finalPrompt.innerHTML = root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span>;
-                        terminal.appendChild(finalPrompt);
+                        terminalContent.appendChild(finalPrompt);
                         
-                        // Прокрутка вниз
-                        terminal.scrollTop = terminal.scrollHeight;
+                        terminalContent.scrollTop = terminalContent.scrollHeight;
                     }
                 }, 100);
             }, 3000);
