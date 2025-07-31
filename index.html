@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kali Linux Terminal</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Courier New', monospace;
+            font-family: 'DejaVu Sans Mono', monospace;
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: #111;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,24 +21,18 @@
             overflow: hidden;
         }
         
-        .desktop {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        
         /* Окно терминала */
         .terminal-window {
             width: 85%;
             max-width: 900px;
             height: 75vh;
-            background: rgba(10, 10, 20, 0.95);
-            border-radius: 8px;
+            background: #0a0a12;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
             border: 1px solid #333;
         }
-
+        
         /* Шапка терминала */
         .title-bar {
             background: #2d2d3a;
@@ -67,11 +60,12 @@
         .max-btn { background: #28c940; }
         
         .window-title {
-            color: #aaa;
-            font-size: 14px;
+            color: #bbb;
+            font-size: 13px;
             flex-grow: 1;
             text-align: center;
             letter-spacing: 0.5px;
+            font-family: 'DejaVu Sans Mono', monospace;
         }
         
         /* Контент терминала */
@@ -79,7 +73,8 @@
             padding: 20px;
             height: calc(100% - 40px);
             overflow-y: auto;
-            color: #d0d0d0;
+            color: #e0e0e0;
+            line-height: 1.4;
         }
         
         .terminal-content::-webkit-scrollbar {
@@ -87,24 +82,29 @@
         }
         
         .terminal-content::-webkit-scrollbar-thumb {
-            background: #444;
+            background: #ff5555;
             border-radius: 4px;
         }
         
         .prompt {
-            color: #33ff33;
             margin-bottom: 15px;
+            white-space: pre-wrap;
         }
         
-        .command { color: #66b2ff; }
-        .output { margin-bottom: 15px; }
+        .user { color: #4caf50; }  /* Зеленый для user@host */
+        .dir { color: #2196f3; }    /* Синий для директории */
+        .root-symbol { color: #ff5555; } /* Красный для # */
+        .command { color: #e0e0e0; } /* Белый для команд */
+        .output { 
+            margin-bottom: 15px;
+            color: #bbb;
+        }
         
         .cursor {
             display: inline-block;
             width: 8px;
             height: 16px;
-            background: #33ff33;
-            margin-left: 4px;
+            background: #ff5555;
             vertical-align: middle;
             animation: blink 1s infinite;
         }
@@ -114,195 +114,145 @@
             50% { opacity: 0; }
         }
         
-        /* Логотип Kali */
-        .kali-logo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.05;
-            filter: blur(8px);
-            z-index: -1;
-            width: 300px;
-            height: 300px;
-        }
-        
         /* Нижний статус бар */
         .status-bar {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.85);
             padding: 6px 12px;
-            color: #33ff33;
-            font-size: 13px;
+            color: #ff5555;
+            font-size: 12px;
             display: flex;
             justify-content: space-between;
+            font-family: 'DejaVu Sans Mono', monospace;
         }
         
-        .time { color: #66b2ff; }
+        .time { color: #4caf50; }
         
-        /* Эффект матрицы на фоне */
-        .matrix-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            opacity: 0.1;
+        /* Эффекты */
+        .glow {
+            text-shadow: 0 0 5px rgba(255, 85, 85, 0.7);
         }
     </style>
 </head>
 <body>
-    <div class="desktop">
-        <!-- Фон с эффектом матрицы -->
-        <canvas class="matrix-bg" id="matrixCanvas"></canvas>
-
-        <!-- Размытый логотип Kali -->
-        <div class="kali-logo">
-            <svg viewBox="0 0 512 512">
-                <path fill="#557CFF" d="M256,0C114.615,0,0,114.615,0,256s114.615,256,256,256s256-114.615,256-256S397.385,0,256,0z M256,475.429
-                    c-121.079,0-219.429-98.351-219.429-219.429S134.921,36.571,256,36.571S475.429,134.921,475.429,256S377.079,475.429,256,475.429z"/>
-                <path fill="#557CFF" d="M343.586,229.622c-9.451-25.51-35.918-35.918-35.918-35.918s-12.985-47.845-63.668-47.845
-                    c-50.683,0-63.668,47.845-63.668,47.845s-26.466,10.408-35.918,35.918c-9.451,25.51,0,57.379,0,57.379s-8.408,26.466,17.056,35.918
-                    c25.465,9.451,57.379,0,57.379,0s11.217,39.902,52.151,47.845c40.934,7.943,54.875-47.845,54.875-47.845
-                    s31.914,9.451,57.379,0c25.465-9.451,17.056-35.918,17.056-35.918S353.037,255.133,343.586,229.622z M256,292.871
-                    c-20.351,0-36.843-16.492-36.843-36.843c0-20.351,16.492-36.843,36.843-36.843s36.843,16.492,36.843,36.843
-                    C292.843,276.379,276.351,292.871,256,292.871z"/>
-            </svg>
-        </div>
-        
-        <!-- Окно терминала -->
-        <div class="terminal-window">
-            <div class="title-bar">
-                <div class="window-buttons">
-                    <div class="window-btn close-btn"></div>
-                    <div class="window-btn min-btn"></div>
-                    <div class="window-btn max-btn"></div>
-                </div>
-                <div class="window-title">root@kali: ~</div>
+    <!-- Окно терминала -->
+    <div class="terminal-window">
+        <div class="title-bar">
+            <div class="window-buttons">
+                <div class="window-btn close-btn"></div>
+                <div class="window-btn min-btn"></div>
+                <div class="window-btn max-btn"></div>
             </div>
+            <div class="window-title">root@kali:~</div>
+        </div>
 
-            <div class="terminal-content" id="terminal">
-                <div class="prompt">Last login: Wed Jul 31 14:26:42 2025 from 192.168.1.101</div>
-                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">neofetch</span></div>
-                <div class="output">
-                    root@kali <br>
-                    ------------- <br>
-                    OS: Kali Linux 2025.1 x86_64 <br>
-                    Host: Virtual Machine <br>
-                    Kernel: 6.8.0-kali3-amd64 <br>
-                    Uptime: 2 hours, 15 mins <br>
-                    Packages: 789 (dpkg) <br>
-                    Shell: zsh 5.9 <br>
-                    Resolution: 1920x1080 <br>
-                    WM: Xfwm4 <br>
-                    Theme: Kali-Dark [GTK3] <br>
-                    Terminal: xfce4-terminal <br>
-                    CPU: Intel i7-12700K (16) @ 5.0GHz <br>
-                    Memory: 2048MiB / 7982MiB <br>
-                </div>
-                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">whoami</span></div>
-                <div class="output">root</div>
-                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">date</span></div>
-                <div class="output">Чтв июл 31 14:27:05 MSK 2025</div>
-                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">ip a</span></div>
-                <div class="output">
-                    1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;inet 127.0.0.1/8 scope host lo <br>
-                    2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;inet 192.168.1.105/24 brd 192.168.1.255 <br>
-                </div>
-                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">cd /usr/share/</span></div>
-                <div class="prompt">root@kali<span class="command">:/usr/share#</span> <span class="command">ls</span></div>
-                <div class="output">
-                    applications  backgrounds  dpkg  kali-themes<br>
-                    fonts         icons         docs  wallpapers
-                </div>
-              <div class="prompt">root@kali<span class="command">:/usr/share#</span> <span class="command">cat about.txt</span></div>
-                <div class="output">
-                    Этот сайт - стилизация терминала Kali Linux.<br>
-                    Создан в учебных целях для портфолио.<br>
-                    Настоящие системы взлома здесь не производятся!<br><br>
-                    
-                    Специальность: Кибербезопасность<br>
-                    Студент: [Твое Имя]<br>
-                    Группа: [Твоя Группа]<br>
-                    Год: 2025
-                </div>
-                <div class="prompt">root@kali<span class="command">:/usr/share#</span> <span class="cursor"></span></div>
+        <div class="terminal-content" id="terminal">
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">neofetch</span></div>
+            <div class="output">
+<span style="color:#ff5555">       .__         .__        </span>   <span class="user">root@kali</span>
+<span style="color:#ff5555">  __ |  | _______|__| __  </span>   ------------- 
+<span style="color:#ff5555">_/  \|  |/ /\__ \  |/ ___\ </span>  <span style="color:#4caf50">OS</span>: Kali Linux 2025.1 x86_64 
+<span style="color:#ff5555">\  _/|    < |  |_> >  \  \_ </span> <span style="color:#2196f3">Host</span>: Virtual Machine 
+<span style="color:#ff5555"> \___  >__|_ \|   /|__|\_  ></span> <span style="color:#ff5555">Kernel</span>: 6.8.0-kali3-amd64 
+<span style="color:#ff5555">     \/     \/|__|           \/ </span> <span style="color:#bb86fc">Uptime</span>: 2 hours, 15 mins 
+                            <span style="color:#ff9800">Packages</span>: 789 (dpkg) 
+                            <span style="color:#00bcd4">Shell</span>: bash 5.2 
+                            <span style="color:#9c27b0">Terminal</span>: xterm 
+                            <span style="color:#f44336">CPU</span>: Intel i7-12700K (16) @ 5.0GHz 
+                            <span style="color:#3f51b5">Memory</span>: 2048MiB / 7982MiB 
             </div>
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">whoami</span></div>
+            <div class="output">root</div>
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">date</span></div>
+            <div class="output" id="real-date"></div>
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">ip -c a</span></div>
+            <div class="output" id="ip-output"></div>
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">cd /usr/share/</span></div>
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="command">ls</span></div>
+            <div class="output">
+applications  backgrounds  dpkg  kali-themes
+fonts         icons        docs  wallpapers
+            </div>
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="command">cat about.txt</span></div>
+            <div class="output">
+This is a Kali Linux terminal simulation website.
+Created for educational purposes and portfolio.
+
+Specialty: Cybersecurity
+Student: [Your Name]
+Year: 2025
+
+Note: This is a static website with no real 
+terminal functionality. All commands are simulated.
+            </div>
+            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="cursor"></span></div>
         </div>
-        
-        <!-- Статус бар -->
-        <div class="status-bar">
-            <div>Kali Linux 2025.1 x86_64</div>
-            <div>Network: 192.168.1.105</div>
-            <div class="time" id="current-time">14:27:45</div>
-        </div>
+    </div>
+    
+    <!-- Статус бар -->
+    <div class="status-bar">
+        <div id="connection-status">ETH0: <span id="real-ip">LOADING...</span></div>
+        <div id="real-time" class="time">--:--:--</div>
+        <div>Kali Linux 2025.1 x86_64</div>
     </div>
 
     <script>
-        // Эффект падающего кода (Matrix)
-        const canvas = document.getElementById('matrixCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const chars = "01";
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-        
-        for(let i = 0; i < columns; i++) {
-            drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
-        }
-        
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(0, 20, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Get real data
+        function updateRealData() {
+            // Real time
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('real-time').textContent = timeStr;
             
-            ctx.fillStyle = '#0f0';
-            ctx.font = ${fontSize}px monospace;
+            // Real date
+            const dateStr = now.toString().split(' ').slice(0, 5).join(' ');
+            document.getElementById('real-date').
+
+                textContent = dateStr;
             
-            for(let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-               if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                
-                drops[i]++;
+            // Real IP
+            if (!window.realIpFetched) {
+                fetch('https://api.ipify.org?format=json')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('real-ip').textContent = data.ip;
+                        document.getElementById('ip-output').innerHTML = `
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536
+    inet 127.0.0.1/8 scope host lo
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500
+    inet <span style="color:#4caf50">${data.ip}</span>/24 brd 192.168.1.255
+                        `;
+                        window.realIpFetched = true;
+                    })
+                    .catch(() => {
+                        document.getElementById('real-ip').textContent = 'DISCONNECTED';
+                        document.getElementById('ip-output').innerHTML = `
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536
+    inet 127.0.0.1/8 scope host lo
+2: eth0: <BROADCAST,MULTICAST> mtu 1500
+    <span style="color:#ff5555">NO-CARRIER</span>
+                        `;
+                    });
             }
         }
         
-        setInterval(drawMatrix, 33);
+        // Update every second
+        setInterval(updateRealData, 1000);
+        updateRealData();
         
-        // Обновление времени
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('ru-RU', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            document.getElementById('current-time').textContent = timeStr;
-        }
-        
-        setInterval(updateTime, 1000);
-        updateTime();
-        
-        // Автопрокрутка терминала
+        // Terminal typing simulation
         const terminal = document.getElementById('terminal');
-        terminal.scrollTop = terminal.scrollHeight;
-        
-        // Эмуляция ввода команд (опционально)
         let commandIndex = 0;
         const commands = [
-            'echo "Сайт создан для демонстрации навыков"',
+            'echo "Cybersecurity is about protection"',
             'ping -c 3 google.com',
             'nmap --version',
             'exit'
@@ -310,53 +260,80 @@
         
         function simulateTyping() {
             const promptLine = document.querySelector('.prompt:last-child');
-            if(!promptLine || commandIndex >= commands.length) return;
+            if (!promptLine || commandIndex >= commands.length) return;
             
             const command = commands[commandIndex];
             let i = 0;
             
+            // Save original content
+            const originalContent = promptLine.innerHTML;
+            
             const typing = setInterval(() => {
-                if(i < command.length) {
+                if (i < command.length) {
                     promptLine.innerHTML = 
-                        root@kali<span class="command">:/usr/share#</span> ${command.substring(0, i+1)}<span class="cursor"></span>;
+                        <span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> ${command.substring(0, i+1)}<span class="cursor"></span>;
                     i++;
                     terminal.scrollTop = terminal.scrollHeight;
                 } else {
                     clearInterval(typing);
-
-                // Добавляем вывод команды
+                    
+                    // Add command output
                     const output = document.createElement('div');
                     output.className = 'output';
                     
-                    if(command.startsWith('ping')) {
+                    if (command.startsWith('ping')) {
                         output.innerHTML = 
                             `PING google.com (142.250.185.206) 56(84) bytes of data.<br>
                             64 bytes from fra24s25-in-f14.1e100.net (142.250.185.206): icmp_seq=1 ttl=118 time=25.6 ms<br>
                             --- google.com ping statistics ---<br>
                             3 packets transmitted, 3 received, 0% packet loss`;
+                    } else if (command.startsWith('nmap')) {
+                        output.innerHTML = 
+                            `<span class="glow">Nmap</span> 7.94 ( https://nmap.org )<br>
+                            Platform: x86_64-pc-linux-gnu<br>
+                            Compiled with: liblua-5.4.4 openssl-3.0.9 libpcre-8.45 libpcap-1.10.3 nmap-libdnet-1.12 ipv6`;
                     } else {
-                        output.textContent = "Команда выполнена успешно";
+                        output.textContent = "Cybersecurity is about protection";
                     }
                     
                     promptLine.insertAdjacentElement('afterend', output);
                     
-                    // Добавляем новую строку
+                    // Add new prompt
                     const newPrompt = document.createElement('div');
                     newPrompt.className = 'prompt';
-                    newPrompt.innerHTML = root@kali<span class="command">:/usr/share#</span> <span class="cursor"></span>;
+                    newPrompt.innerHTML = <span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="cursor"></span>;
+
                     terminal.appendChild(newPrompt);
                     
                     commandIndex++;
                     terminal.scrollTop = terminal.scrollHeight;
                     
-                    // Рекурсивный вызов для следующей команды
+                    // Simulate next command
                     setTimeout(simulateTyping, 2000);
                 }
             }, 100);
         }
         
-        // Запуск через 5 секунд
-        setTimeout(simulateTyping, 5000);
+        // Start simulation after delay
+        setTimeout(simulateTyping, 3000);
+        
+        // Auto-scroll
+        terminal.scrollTop = terminal.scrollHeight;
+        
+        // Window buttons functionality
+        document.querySelector('.close-btn').addEventListener('click', () => {
+            document.body.innerHTML = '<div style="color:#ff5555;font-family:monospace;text-align:center;padding-top:50px">Terminal session terminated</div>';
+            document.body.style.backgroundColor = '#000';
+        });
+        
+        document.querySelector('.min-btn').addEventListener('click', () => {
+            document.querySelector('.terminal-window').style.transform = 'translateY(100vh)';
+            setTimeout(() => {
+                alert('Terminal minimized - Press OK to restore');
+                document.querySelector('.terminal-window').style.transform = '';
+            }, 300);
+        });
     </script>
 </body>
 </html>
+        
