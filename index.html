@@ -3,135 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBERSECURITY | ROOTSPRUT</title>
-    <style>
-        /* ОСНОВНЫЕ СТИЛИ */
-        body {
-            background-color: #0a0f0a; /* Темно-зеленый фон */
-            color: #00ff77; /* Ярко-зеленый текст */
-            font-family: 'Courier New', monospace;
-            margin: 0;
-            overflow-x: hidden;
-            position: relative;
-            min-height: 100vh;
-        }
-
-        /* ФОН МАТЕРИНСКОЙ ПЛАТЫ */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                /* Зеленые дорожки платы */
-                linear-gradient(90deg, transparent 95%, rgba(0, 255, 100, 0.1) 95%),
-                linear-gradient(0deg, transparent 95%, rgba(0, 255, 100, 0.1) 95%),
-                
-                /* Точки пайки */
-                radial-gradient(circle, #00cc44 1px, transparent 2px),
-                
-                /* Чипы */
-                linear-gradient(135deg, transparent 40%, rgba(0, 200, 80, 0.05) 40%),
-                linear-gradient(225deg, transparent 40%, rgba(0, 200, 80, 0.05) 40%);
-            
-            background-size: 
-                50px 50px, /* Шаг дорожек */
-                50px 50px,
-                20px 20px, /* Шаг точек */
-                100px 100px, /* Размер чипов */
-                100px 100px;
-                
-            z-index: -1;
-            opacity: 0.8;
-        }
-
-        /* ЧЕРНЫЙ ПРОЦЕССОР С ОСЬМИНОГОМ */
-        header {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 70px;
-            height: 70px;
-            background: #000;
-            border: 2px solid #00ff77;
-            border-radius: 8px;
-            box-shadow: 
-                0 0 15px #00ff77,
-                inset 0 0 10px #00aa44;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* Сокет процессора */
-        header::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: 
-                linear-gradient(90deg, transparent 48%, #00ff77 48%, #00ff77 52%, transparent 52%),
-                linear-gradient(0deg, transparent 48%, #00ff77 48%, #00ff77 52%, transparent 52%);
-            opacity: 0.3;
-        }
-
-        /* Осьминог */
-        header::after {
-            content: "🐙";
-            font-size: 35px;
-            color: #00ff77;
-            text-shadow: 0 0 8px #00ff77;
-            z-index: 2;
-            animation: pulse 3s infinite;
-        }
-
-        /* Анимация свечения */
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; text-shadow: 0 0 15px #00ff77; }
-        }
-
-        /* Контент */
-        main {
-            padding: 100px 20px 20px 120px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            text-shadow: 0 0 10px #00ff77;
-            letter-spacing: 2px;
-        }
-
-        /* Эффект неоновой линии под текстом */
-        h1::after {
-            content: "";
-            display: block;
-            width: 200px;
-            height: 3px;
-            background: #00ff77;
-            margin-top: 10px;
-            box-shadow: 0 0 10px #00ff77;
-        }
-    </style>
+    <title>CyberNomad // Лабораторный Стенд</title> <!-- Крутое название! -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Можно подключить шрифты с Google Fonts (например, Orbitron, Rajdhani, Inconsolata, Exo 2) -->
 </head>
 <body>
-    <header><!-- Процессор с осьминогом --></header>
-    
+    <header>
+        <h1>// CyberNomad_</h1> <!-- Символы // и _ добавляют техностили -->
+        <p>Экспериментальный полигон для веб-технологий</p>
+    </header>
+
     <main>
-        <h1>[RootSprut]</h1>
-        <h2>PENTEST | CYBERSECURITY</h2>
-        
-        <section>
-            <h3>My Telegram:</h3>
+        <section id="about">
+            <h2>><span class="blink">_</span> /О ПРОЕКТЕ</h2> <!-- Эффект командной строки -->
+            <p>Добро пожаловать на мой учебный стенд. Это цифровое пространство создано для экспериментов с HTML, CSS и JavaScript в контексте изучения кибербезопасности. Никаких уязвимостей тут не спрятано (пока что... шучу 😉). Просто место для творчества и оттачивания навыков фронтенда.</p>
+        </section>
+
+        <section id="links">
+            <h2>><span class="blink">_</span> /СВЯЗЬ</h2>
             <ul>
-                <li>@rootsprut</li>
-                <li>@fawk700</li>
-                <li>@way1g33khighmgmt</li>
+                <li><a href="https://github.com/ВашЛогин" target="_blank">GitHub</a></li>
+                <!-- Можно добавить другие ссылки (LinkedIn, VK, TG) -->
             </ul>
         </section>
+
+        <section id="fun">
+            <h2>><span class="blink">_</span> /ZONE</h2>
+            <p>Здесь могла быть ваша реклама... или что-то прикольное.</p>
+            <button id="hackButton">АКТИВИРОВАТЬ "ХАК"</button> <!-- Просто кнопка для вида -->
+            <p id="hackOutput"></p> <!-- Сюда JS может выводить рандомный "хакерский" текст -->
+        </section>
     </main>
+
+    <footer>
+        <p>© 2024 [Ваше Имя или Псевдоним]. Собрано на GitHub Pages. Вдохновлено 0x00 и 0xFF.</p>
+    </footer>
+
+    <script src="script.js"></script> <!-- Подключаем скрипт -->
 </body>
 </html>
