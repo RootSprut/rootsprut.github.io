@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kali Linux Terminal</title>
+    <title>RootSprut:~</title>
     <style>
         * {
             margin: 0;
@@ -68,10 +68,29 @@
             font-family: 'DejaVu Sans Mono', monospace;
         }
         
+        /* Меню терминала */
+        .terminal-menu {
+            background: #3a3a4a;
+            padding: 4px 8px;
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #ccc;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        
+        .terminal-menu span {
+            cursor: default;
+        }
+        
+        .terminal-menu span:hover {
+            color: #fff;
+        }
+        
         /* Контент терминала */
         .terminal-content {
             padding: 20px;
-            height: calc(100% - 40px);
+            height: calc(100% - 40px - 29px); /* Высота минус заголовок и меню */
             overflow-y: auto;
             color: #e0e0e0;
             line-height: 1.4;
@@ -79,10 +98,11 @@
         
         .terminal-content::-webkit-scrollbar {
             width: 8px;
+            background: #1a1a1a;
         }
         
         .terminal-content::-webkit-scrollbar-thumb {
-            background: #ff5555;
+            background: #3a3a4a;
             border-radius: 4px;
         }
         
@@ -91,20 +111,24 @@
             white-space: pre-wrap;
         }
         
-        .user { color: #4caf50; }  /* Зеленый для user@host */
-        .dir { color: #2196f3; }    /* Синий для директории */
-        .root-symbol { color: #ff5555; } /* Красный для # */
-        .command { color: #e0e0e0; } /* Белый для команд */
+        .root-prompt { 
+            color: #ff5555; /* Красный для root промпта */
+        }
+        
+        .command { 
+            color: #bbb; /* Серый для команд */
+        }
+        
         .output { 
             margin-bottom: 15px;
-            color: #bbb;
+            color: #bbb; /* Серый для вывода */
         }
         
         .cursor {
             display: inline-block;
             width: 8px;
             height: 16px;
-            background: #ff5555;
+            background: #bbb; /* Серый курсор */
             vertical-align: middle;
             animation: blink 1s infinite;
         }
@@ -112,28 +136,6 @@
         @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
-        }
-        
-        /* Нижний статус бар */
-        .status-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            padding: 6px 12px;
-            color: #ff5555;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            font-family: 'DejaVu Sans Mono', monospace;
-        }
-        
-        .time { color: #4caf50; }
-        
-        /* Эффекты */
-        .glow {
-            text-shadow: 0 0 5px rgba(255, 85, 85, 0.7);
         }
     </style>
 </head>
@@ -148,181 +150,67 @@
             </div>
             <div class="window-title">root@kali:~</div>
         </div>
-
-        <div class="terminal-content" id="terminal">
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">neofetch</span></div>
-            <div class="output">
-<span style="color:#ff5555">       .__         .__        </span>   <span class="user">root@kali</span>
-<span style="color:#ff5555">  __ |  | _______|__| __  </span>   ------------- 
-<span style="color:#ff5555">_/  \|  |/ /\__ \  |/ ___\ </span>  <span style="color:#4caf50">OS</span>: Kali Linux 2025.1 x86_64 
-<span style="color:#ff5555">\  _/|    < |  |_> >  \  \_ </span> <span style="color:#2196f3">Host</span>: Virtual Machine 
-<span style="color:#ff5555"> \___  >__|_ \|   /|__|\_  ></span> <span style="color:#ff5555">Kernel</span>: 6.8.0-kali3-amd64 
-<span style="color:#ff5555">     \/     \/|__|           \/ </span> <span style="color:#bb86fc">Uptime</span>: 2 hours, 15 mins 
-                            <span style="color:#ff9800">Packages</span>: 789 (dpkg) 
-                            <span style="color:#00bcd4">Shell</span>: bash 5.2 
-                            <span style="color:#9c27b0">Terminal</span>: xterm 
-                            <span style="color:#f44336">CPU</span>: Intel i7-12700K (16) @ 5.0GHz 
-                            <span style="color:#3f51b5">Memory</span>: 2048MiB / 7982MiB 
-            </div>
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">whoami</span></div>
-            <div class="output">root</div>
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">date</span></div>
-            <div class="output" id="real-date"></div>
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">ip -c a</span></div>
-            <div class="output" id="ip-output"></div>
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">~</span><span class="root-symbol">#</span> <span class="command">cd /usr/share/</span></div>
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="command">ls</span></div>
-            <div class="output">
-applications  backgrounds  dpkg  kali-themes
-fonts         icons        docs  wallpapers
-            </div>
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="command">cat about.txt</span></div>
-            <div class="output">
-This is a Kali Linux terminal simulation website.
-Created for educational purposes and portfolio.
-
-Specialty: Cybersecurity
-Student: [Your Name]
-Year: 2025
-
-Note: This is a static website with no real 
-terminal functionality. All commands are simulated.
-            </div>
-            <div class="prompt"><span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="cursor"></span></div>
+        
+        <!-- Меню терминала -->
+        <div class="terminal-menu">
+            <span>File</span>
+            <span>Edit</span>
+            <span>View</span>
+            <span>Search</span>
+            <span>Terminal</span>
+            <span>Help</span>
         </div>
-    </div>
-    
-    <!-- Статус бар -->
-    <div class="status-bar">
-        <div id="connection-status">ETH0: <span id="real-ip">LOADING...</span></div>
-        <div id="real-time" class="time">--:--:--</div>
-        <div>Kali Linux 2025.1 x86_64</div>
+        
+        <div class="terminal-content" id="terminal">
+            <div class="prompt root-prompt">root@kali:<span class="command">~</span> <span class="command">airmon-ng</span></div>
+            <div class="output">Run it as root</div>
+            
+            <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">sudo airmon-ng</span></div>
+            <div class="output">[sudo] password for root: </div>
+            <div class="output">
+                <table>
+                    <tr>
+                        <th>PHY</th>
+                        <th>Interface</th>
+                        <th>Driver</th>
+                        <th>Chipset</th>
+                    </tr>
+                    <tr>
+                        <td>phy0</td>
+                        <td>wlan0</td>
+                        <td>mt7601u</td>
+                        <td>Ralink Technology, Corp. MT7601U</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="prompt root-prompt">root@kali~:<span class="command"> </span> <span class="command">cd /usr/rootsprut/</span></div>
+            <div class="prompt root-prompt">root@kali~:<span class="command"> /usr/rootsprut#</span> <span class="command">cat about.txt</span></div>
+            <div class="output">
+                This is a Kali Linux terminal simulation website.<br>
+                Created for educational purposes and portfolio.<br><br>
+                
+                Specialty: Cybersecurity<br>
+                Name: [RootSprut]<br>
+                Year: 2025<br><br>
+                
+                Note: This is a static website with no real<br>
+                terminal functionality. All commands are simulated.
+            </div>
+            
+            <div class="prompt root-prompt">root@kali~:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span></div>
+        </div>
     </div>
 
     <script>
-        // Get real data
-        function updateRealData() {
-            // Real time
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            });
-            document.getElementById('real-time').textContent = timeStr;
-            
-            // Real date
-            const dateStr = now.toString().split(' ').slice(0, 5).join(' ');
-            document.getElementById('real-date').
-
-                textContent = dateStr;
-            
-            // Real IP
-            if (!window.realIpFetched) {
-                fetch('https://api.ipify.org?format=json')
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('real-ip').textContent = data.ip;
-                        document.getElementById('ip-output').innerHTML = `
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536
-    inet 127.0.0.1/8 scope host lo
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500
-    inet <span style="color:#4caf50">${data.ip}</span>/24 brd 192.168.1.255
-                        `;
-                        window.realIpFetched = true;
-                    })
-                    .catch(() => {
-                        document.getElementById('real-ip').textContent = 'DISCONNECTED';
-                        document.getElementById('ip-output').innerHTML = `
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536
-    inet 127.0.0.1/8 scope host lo
-2: eth0: <BROADCAST,MULTICAST> mtu 1500
-    <span style="color:#ff5555">NO-CARRIER</span>
-                        `;
-                    });
-            }
-        }
-        
-        // Update every second
-        setInterval(updateRealData, 1000);
-        updateRealData();
-        
-        // Terminal typing simulation
         const terminal = document.getElementById('terminal');
-        let commandIndex = 0;
-        const commands = [
-            'echo "Cybersecurity is about protection"',
-            'ping -c 3 google.com',
-            'nmap --version',
-            'exit'
-        ];
         
-        function simulateTyping() {
-            const promptLine = document.querySelector('.prompt:last-child');
-            if (!promptLine || commandIndex >= commands.length) return;
-            
-            const command = commands[commandIndex];
-            let i = 0;
-            
-            // Save original content
-            const originalContent = promptLine.innerHTML;
-            
-            const typing = setInterval(() => {
-                if (i < command.length) {
-                    promptLine.innerHTML = 
-                        <span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> ${command.substring(0, i+1)}<span class="cursor"></span>;
-                    i++;
-                    terminal.scrollTop = terminal.scrollHeight;
-                } else {
-                    clearInterval(typing);
-                    
-                    // Add command output
-                    const output = document.createElement('div');
-                    output.className = 'output';
-                    
-                    if (command.startsWith('ping')) {
-                        output.innerHTML = 
-                            `PING google.com (142.250.185.206) 56(84) bytes of data.<br>
-                            64 bytes from fra24s25-in-f14.1e100.net (142.250.185.206): icmp_seq=1 ttl=118 time=25.6 ms<br>
-                            --- google.com ping statistics ---<br>
-                            3 packets transmitted, 3 received, 0% packet loss`;
-                    } else if (command.startsWith('nmap')) {
-                        output.innerHTML = 
-                            `<span class="glow">Nmap</span> 7.94 ( https://nmap.org )<br>
-                            Platform: x86_64-pc-linux-gnu<br>
-                            Compiled with: liblua-5.4.4 openssl-3.0.9 libpcre-8.45 libpcap-1.10.3 nmap-libdnet-1.12 ipv6`;
-                    } else {
-                        output.textContent = "Cybersecurity is about protection";
-                    }
-                    
-                    promptLine.insertAdjacentElement('afterend', output);
-                    
-                    // Add new prompt
-                    const newPrompt = document.createElement('div');
-                    newPrompt.className = 'prompt';
-                    newPrompt.innerHTML = <span class="user">root@kali</span>:<span class="dir">/usr/share</span><span class="root-symbol">#</span> <span class="cursor"></span>;
-
-                    terminal.appendChild(newPrompt);
-                    
-                    commandIndex++;
-                    terminal.scrollTop = terminal.scrollHeight;
-                    
-                    // Simulate next command
-                    setTimeout(simulateTyping, 2000);
-                }
-            }, 100);
-        }
-        
-        // Start simulation after delay
-        setTimeout(simulateTyping, 3000);
-        
-        // Auto-scroll
+        // Автопрокрутка терминала
         terminal.scrollTop = terminal.scrollHeight;
         
-        // Window buttons functionality
+        // Функционал кнопок окна
         document.querySelector('.close-btn').addEventListener('click', () => {
-            document.body.innerHTML = '<div style="color:#ff5555;font-family:monospace;text-align:center;padding-top:50px">Terminal session terminated</div>';
+            document.body.innerHTML = '<div style="color:#bbb;font-family:monospace;text-align:center;padding-top:50px">Terminal session terminated</div>';
             document.body.style.backgroundColor = '#000';
         });
         
@@ -333,7 +221,39 @@ terminal functionality. All commands are simulated.
                 document.querySelector('.terminal-window').style.transform = '';
             }, 300);
         });
+        
+        // Симуляция ввода команды
+        setTimeout(() => {
+            const promptLine = document.querySelector('.prompt:last-child');
+            
+            let i = 0;
+            const cmd = 'echo "Cybersecurity portfolio project"';
+            
+            const typing = setInterval(() => {
+                if(i < cmd.length) {
+                    promptLine.innerHTML = 
+                        root@kali:<span class="command">/usr/rootsprut#</span> ${cmd.substring(0, i+1)}<span class="cursor"></span>;
+                    i++;
+                    terminal.scrollTop = terminal.scrollHeight;
+                } else {
+                    clearInterval(typing);
+                    
+                    // Добавляем вывод
+                    const output = document.createElement('div');
+                    output.className = 'output';
+                    output.textContent = 'Cybersecurity portfolio project';
+                    promptLine.insertAdjacentElement('afterend', output);
+
+                // Новая строка
+                    const newPrompt = document.createElement('div');
+                    newPrompt.className = 'prompt root-prompt';
+                    newPrompt.innerHTML = root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span>;
+                    terminal.appendChild(newPrompt);
+                    
+                    terminal.scrollTop = terminal.scrollHeight;
+                }
+            }, 100);
+        }, 3000);
     </script>
 </body>
 </html>
-        
