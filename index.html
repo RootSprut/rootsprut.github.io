@@ -3,42 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberNomad // Лабораторный Стенд</title> <!-- Крутое название! -->
-    <link rel="stylesheet" href="style.css">
-    <!-- Можно подключить шрифты с Google Fonts (например, Orbitron, Rajdhani, Inconsolata, Exo 2) -->
+    <title>Kali Linux Terminal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .desktop {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Окно терминала */
+        .terminal-window {
+            width: 85%;
+            max-width: 900px;
+            height: 75vh;
+            background: rgba(10, 10, 20, 0.95);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 1px solid #333;
+        }
+
+        /* Шапка терминала */
+        .title-bar {
+            background: #2d2d3a;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #000;
+        }
+        
+        .window-buttons {
+            display: flex;
+            gap: 8px;
+            margin-right: 12px;
+        }
+        
+        .window-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .close-btn { background: #ff5f57; }
+        .min-btn { background: #ffbd2e; }
+        .max-btn { background: #28c940; }
+        
+        .window-title {
+            color: #aaa;
+            font-size: 14px;
+            flex-grow: 1;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Контент терминала */
+        .terminal-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            color: #d0d0d0;
+        }
+        
+        .terminal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .terminal-content::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        
+        .prompt {
+            color: #33ff33;
+            margin-bottom: 15px;
+        }
+        
+        .command { color: #66b2ff; }
+        .output { margin-bottom: 15px; }
+        
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #33ff33;
+            margin-left: 4px;
+            vertical-align: middle;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* Логотип Kali */
+        .kali-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.05;
+            filter: blur(8px);
+            z-index: -1;
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Нижний статус бар */
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 6px 12px;
+            color: #33ff33;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .time { color: #66b2ff; }
+        
+        /* Эффект матрицы на фоне */
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.1;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>// CyberNomad_</h1> <!-- Символы // и _ добавляют техностили -->
-        <p>Экспериментальный полигон для веб-технологий</p>
-    </header>
+    <div class="desktop">
+        <!-- Фон с эффектом матрицы -->
+        <canvas class="matrix-bg" id="matrixCanvas"></canvas>
 
-    <main>
-        <section id="about">
-            <h2>><span class="blink">_</span> /О ПРОЕКТЕ</h2> <!-- Эффект командной строки -->
-            <p>Добро пожаловать на мой учебный стенд. Это цифровое пространство создано для экспериментов с HTML, CSS и JavaScript в контексте изучения кибербезопасности. Никаких уязвимостей тут не спрятано (пока что... шучу 😉). Просто место для творчества и оттачивания навыков фронтенда.</p>
-        </section>
+        <!-- Размытый логотип Kali -->
+        <div class="kali-logo">
+            <svg viewBox="0 0 512 512">
+                <path fill="#557CFF" d="M256,0C114.615,0,0,114.615,0,256s114.615,256,256,256s256-114.615,256-256S397.385,0,256,0z M256,475.429
+                    c-121.079,0-219.429-98.351-219.429-219.429S134.921,36.571,256,36.571S475.429,134.921,475.429,256S377.079,475.429,256,475.429z"/>
+                <path fill="#557CFF" d="M343.586,229.622c-9.451-25.51-35.918-35.918-35.918-35.918s-12.985-47.845-63.668-47.845
+                    c-50.683,0-63.668,47.845-63.668,47.845s-26.466,10.408-35.918,35.918c-9.451,25.51,0,57.379,0,57.379s-8.408,26.466,17.056,35.918
+                    c25.465,9.451,57.379,0,57.379,0s11.217,39.902,52.151,47.845c40.934,7.943,54.875-47.845,54.875-47.845
+                    s31.914,9.451,57.379,0c25.465-9.451,17.056-35.918,17.056-35.918S353.037,255.133,343.586,229.622z M256,292.871
+                    c-20.351,0-36.843-16.492-36.843-36.843c0-20.351,16.492-36.843,36.843-36.843s36.843,16.492,36.843,36.843
+                    C292.843,276.379,276.351,292.871,256,292.871z"/>
+            </svg>
+        </div>
+        
+        <!-- Окно терминала -->
+        <div class="terminal-window">
+            <div class="title-bar">
+                <div class="window-buttons">
+                    <div class="window-btn close-btn"></div>
+                    <div class="window-btn min-btn"></div>
+                    <div class="window-btn max-btn"></div>
+                </div>
+                <div class="window-title">root@kali: ~</div>
+            </div>
 
-        <section id="links">
-            <h2>><span class="blink">_</span> /СВЯЗЬ</h2>
-            <ul>
-                <li><a href="https://github.com/ВашЛогин" target="_blank">GitHub</a></li>
-                <!-- Можно добавить другие ссылки (LinkedIn, VK, TG) -->
-            </ul>
-        </section>
+            <div class="terminal-content" id="terminal">
+                <div class="prompt">Last login: Wed Jul 31 14:26:42 2025 from 192.168.1.101</div>
+                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">neofetch</span></div>
+                <div class="output">
+                    root@kali <br>
+                    ------------- <br>
+                    OS: Kali Linux 2025.1 x86_64 <br>
+                    Host: Virtual Machine <br>
+                    Kernel: 6.8.0-kali3-amd64 <br>
+                    Uptime: 2 hours, 15 mins <br>
+                    Packages: 789 (dpkg) <br>
+                    Shell: zsh 5.9 <br>
+                    Resolution: 1920x1080 <br>
+                    WM: Xfwm4 <br>
+                    Theme: Kali-Dark [GTK3] <br>
+                    Terminal: xfce4-terminal <br>
+                    CPU: Intel i7-12700K (16) @ 5.0GHz <br>
+                    Memory: 2048MiB / 7982MiB <br>
+                </div>
+                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">whoami</span></div>
+                <div class="output">root</div>
+                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">date</span></div>
+                <div class="output">Чтв июл 31 14:27:05 MSK 2025</div>
+                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">ip a</span></div>
+                <div class="output">
+                    1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;inet 127.0.0.1/8 scope host lo <br>
+                    2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;inet 192.168.1.105/24 brd 192.168.1.255 <br>
+                </div>
+                <div class="prompt">root@kali<span class="command">:~#</span> <span class="command">cd /usr/share/</span></div>
+                <div class="prompt">root@kali<span class="command">:/usr/share#</span> <span class="command">ls</span></div>
+                <div class="output">
+                    applications  backgrounds  dpkg  kali-themes<br>
+                    fonts         icons         docs  wallpapers
+                </div>
+              <div class="prompt">root@kali<span class="command">:/usr/share#</span> <span class="command">cat about.txt</span></div>
+                <div class="output">
+                    Этот сайт - стилизация терминала Kali Linux.<br>
+                    Создан в учебных целях для портфолио.<br>
+                    Настоящие системы взлома здесь не производятся!<br><br>
+                    
+                    Специальность: Кибербезопасность<br>
+                    Студент: [Твое Имя]<br>
+                    Группа: [Твоя Группа]<br>
+                    Год: 2025
+                </div>
+                <div class="prompt">root@kali<span class="command">:/usr/share#</span> <span class="cursor"></span></div>
+            </div>
+        </div>
+        
+        <!-- Статус бар -->
+        <div class="status-bar">
+            <div>Kali Linux 2025.1 x86_64</div>
+            <div>Network: 192.168.1.105</div>
+            <div class="time" id="current-time">14:27:45</div>
+        </div>
+    </div>
 
-        <section id="fun">
-            <h2>><span class="blink">_</span> /ZONE</h2>
-            <p>Здесь могла быть ваша реклама... или что-то прикольное.</p>
-            <button id="hackButton">АКТИВИРОВАТЬ "ХАК"</button> <!-- Просто кнопка для вида -->
-            <p id="hackOutput"></p> <!-- Сюда JS может выводить рандомный "хакерский" текст -->
-        </section>
-    </main>
+    <script>
+        // Эффект падающего кода (Matrix)
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = "01";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for(let i = 0; i < columns; i++) {
+            drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 20, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0f0';
+            ctx.font = ${fontSize}px monospace;
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+               if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 33);
+        
+        // Обновление времени
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeStr;
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Автопрокрутка терминала
+        const terminal = document.getElementById('terminal');
+        terminal.scrollTop = terminal.scrollHeight;
+        
+        // Эмуляция ввода команд (опционально)
+        let commandIndex = 0;
+        const commands = [
+            'echo "Сайт создан для демонстрации навыков"',
+            'ping -c 3 google.com',
+            'nmap --version',
+            'exit'
+        ];
+        
+        function simulateTyping() {
+            const promptLine = document.querySelector('.prompt:last-child');
+            if(!promptLine || commandIndex >= commands.length) return;
+            
+            const command = commands[commandIndex];
+            let i = 0;
+            
+            const typing = setInterval(() => {
+                if(i < command.length) {
+                    promptLine.innerHTML = 
+                        root@kali<span class="command">:/usr/share#</span> ${command.substring(0, i+1)}<span class="cursor"></span>;
+                    i++;
+                    terminal.scrollTop = terminal.scrollHeight;
+                } else {
+                    clearInterval(typing);
 
-    <footer>
-        <p>© 2024 [Ваше Имя или Псевдоним]. Собрано на GitHub Pages. Вдохновлено 0x00 и 0xFF.</p>
-    </footer>
-
-    <script src="script.js"></script> <!-- Подключаем скрипт -->
+                // Добавляем вывод команды
+                    const output = document.createElement('div');
+                    output.className = 'output';
+                    
+                    if(command.startsWith('ping')) {
+                        output.innerHTML = 
+                            `PING google.com (142.250.185.206) 56(84) bytes of data.<br>
+                            64 bytes from fra24s25-in-f14.1e100.net (142.250.185.206): icmp_seq=1 ttl=118 time=25.6 ms<br>
+                            --- google.com ping statistics ---<br>
+                            3 packets transmitted, 3 received, 0% packet loss`;
+                    } else {
+                        output.textContent = "Команда выполнена успешно";
+                    }
+                    
+                    promptLine.insertAdjacentElement('afterend', output);
+                    
+                    // Добавляем новую строку
+                    const newPrompt = document.createElement('div');
+                    newPrompt.className = 'prompt';
+                    newPrompt.innerHTML = root@kali<span class="command">:/usr/share#</span> <span class="cursor"></span>;
+                    terminal.appendChild(newPrompt);
+                    
+                    commandIndex++;
+                    terminal.scrollTop = terminal.scrollHeight;
+                    
+                    // Рекурсивный вызов для следующей команды
+                    setTimeout(simulateTyping, 2000);
+                }
+            }, 100);
+        }
+        
+        // Запуск через 5 секунд
+        setTimeout(simulateTyping, 5000);
+    </script>
 </body>
 </html>
