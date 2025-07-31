@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kali Linux Terminal</title>
     <style>
-        /* Стили для страницы аутентификации */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'DejaVu Sans Mono', monospace;
+            font-family: 'Courier New', monospace;
         }
         
         body {
@@ -81,10 +80,6 @@
             outline: none;
         }
         
-        .btn:hover {
-            background: #ff3333;
-        }
-        
         .hint {
             margin-top: 20px;
             color: #777;
@@ -96,10 +91,6 @@
             text-decoration: none;
         }
         
-        .hint a:hover {
-            text-decoration: underline;
-        }
-        
         .error {
             color: #ff5555;
             margin-top: 10px;
@@ -107,7 +98,7 @@
             display: none;
         }
         
-        /* Стили для терминала */
+        /* Терминал */
         #terminal-container {
             display: none;
             width: 100%;
@@ -116,22 +107,18 @@
             top: 0;
             left: 0;
             background: #111;
-            z-index: 1000;
+            padding: 20px;
         }
 
         .terminal-window {
-            width: 85%;
+            width: 100%;
             max-width: 900px;
-            height: 75vh;
+            height: 90vh;
             background: #0a0a12;
             border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.1);
             border: 1px solid #333;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            margin: 0 auto;
         }
         
         .title-bar {
@@ -177,30 +164,12 @@
             border-bottom: 1px solid #1a1a1a;
         }
         
-        .terminal-menu span {
-            cursor: default;
-        }
-        
-        .terminal-menu span:hover {
-            color: #fff;
-        }
-        
         .terminal-content {
             padding: 20px;
             height: calc(100% - 40px - 29px);
             overflow-y: auto;
             color: #e0e0e0;
             line-height: 1.4;
-        }
-        
-        .terminal-content::-webkit-scrollbar {
-            width: 8px;
-            background: #1a1a1a;
-        }
-        
-        .terminal-content::-webkit-scrollbar-thumb {
-            background: #3a3a4a;
-            border-radius: 4px;
         }
         
         .prompt {
@@ -257,197 +226,132 @@
     </div>
     
     <!-- Контейнер для терминала -->
-    <div id="terminal-container"></div>
+    <div id="terminal-container">
+        <div class="terminal-window">
+            <div class="title-bar">
+                <div class="window-buttons">
+                    <div class="window-btn close-btn" id="close-btn"></div>
+                    <div class="window-btn min-btn" id="min-btn"></div>
+                    <div class="window-btn max-btn" id="max-btn"></div>
+                </div>
+                <div class="window-title">root@kali: ~</div>
+            </div>
+            
+            <div class="terminal-menu">
+                <span>File</span>
+                <span>Edit</span>
+                <span>View</span>
+                <span>Search</span>
+                <span>Terminal</span>
+                <span>Help</span>
+            </div>
+            
+            <div class="terminal-content" id="terminal-content">
+                <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">airmon-ng</span></div>
+                <div class="output">Run it as root</div>
+                
+                <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">sudo airmon-ng</span></div>
+                <div class="output">[sudo] password for root: ********</div>
+                <div class="output">
+                    PHY     Interface       Driver          Chipset<br>
+                    phy0    wlan0           mt7601u         Ralink Technology, Corp. MT7601U
+                </div>
+                
+                <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">cd /usr/rootsprut/</span></div>
+                <div class="prompt root-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="command">cat about.txt</span></div>
+                <div class="output">
+                    This is a Kali Linux terminal simulation website.<br>
+                    Created for educational purposes and portfolio.<br><br>
+                    
+                    Specialty: Cybersecurity<br>
+                    Student: [Your Name]<br>
+                    Year: 2025<br><br>
+                    
+                    Note: This is a static website with no real<br>
+                    terminal functionality.
+                </div>
+                
+                <div class="prompt root-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span></div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Пароль для доступа (замени на свой)
+        // Пароль для доступа (измените на свой)
         const CORRECT_PASSWORD = "RootSprut123!";
         
+        // Находим элементы
+        const loginContainer = document.getElementById('login-container');
+        const terminalContainer = document.getElementById('terminal-container');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('error-msg');
+        const loginBtn = document.getElementById('login-btn');
+        
+        // Скрываем терминал изначально
+        terminalContainer.style.display = 'none';
+        
         // Обработчик кнопки входа
-        document.getElementById('login-btn').addEventListener('click', function() {
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('error-msg');
+        loginBtn.addEventListener('click', function() {
+            const password = passwordInput.value;
             
             if (password === CORRECT_PASSWORD) {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('terminal-container').style.display = 'block';
-                loadTerminal();
+                loginContainer.style.display = 'none';
+                terminalContainer.style.display = 'block';
             } else {
                 errorMsg.style.display = 'block';
-                document.getElementById('password').style.borderColor = '#ff5555';
+                passwordInput.style.borderColor = '#ff5555';
                 setTimeout(() => {
-                    document.getElementById('password').style.borderColor = '#333';
+                    passwordInput.style.borderColor = '#333';
                 }, 1000);
             }
         });
         
         // Обработка нажатия Enter
-        document.getElementById('password').addEventListener('keyup', function(event) {
+        passwordInput.addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
-                document.getElementById('login-btn').click();
+                loginBtn.click();
             }
         });
         
-        // Загрузка терминала
-        function loadTerminal() {
-            document.getElementById('terminal-container').innerHTML = `
-                <div class="terminal-window">
-                    <div class="title-bar">
-                        <div class="window-buttons">
-                            <div class="window-btn close-btn" id="close-btn"></div>
-                            <div class="window-btn min-btn" id="min-btn"></div>
-                            <div class="window-btn max-btn" id="max-btn"></div>
-                        </div>
-                        <div class="window-title">root@kali: ~</div>
-                    </div>
-                    
-                    <div class="terminal-menu">
-                        <span>File</span>
-                        <span>Edit</span>
-                        <span>View</span>
-                        <span>Search</span>
-                        <span>Terminal</span>
-                        <span>Help</span>
-                    </div>
-                    
-                    <div class="terminal-content" id="terminal-content">
-                        <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">airmon-ng</span></div>
-                        <div class="output">Run it as root</div>
-                        
-                        <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">sudo airmon-ng</span></div>
-                        <div class="output">[sudo] password for root: ********</div>
-                        <div class="output">
-                            <table>
-                                <tr>
-                                    <th>PHY</th>
-                                    <th>Interface</th>
-                                    <th>Driver</th>
-                                    <th>Chipset</th>
-                                </tr>
-                                <tr>
-                                    <td>phy0</td>
-                                    <td>wlan0</td>
-                                    <td>mt7601u</td>
-                                    <td>Ralink Technology, Corp. MT7601U</td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <div class="prompt root-prompt">root@kali:<span class="command">~#</span> <span class="command">cd /usr/rootsprut/</span></div>
-                        <div class="prompt root-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="command">cat about.txt</span></div>
-                        <div class="output">
-                            This is a Kali Linux terminal simulation website.<br>
-                            Created for educational purposes and portfolio.<br><br>
-                            
-                            Specialty: Cybersecurity<br>
-                            Student: [Your Name]<br>
-                            Year: 2025<br><br>
-                            
-                            Note: This is a static website with no real<br>
-                            terminal functionality. All commands are simulated.
-                        </div>
-                        
-                        <div class="prompt root-prompt" id="last-prompt">root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span></div>
-                    </div>
+        // Кнопка закрытия терминала
+        document.getElementById('close-btn').addEventListener('click', function() {
+            document.body.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: #000;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #ff5555;
+                    font-family: 'Courier New', monospace;
+                    font-size: 24px;
+                ">
+                    Terminal session terminated
                 </div>
             `;
-            
-            // Инициализация кнопок терминала
-            initTerminal();
-        }
+        });
         
-        // Инициализация терминала
-        function initTerminal() {
-            // Кнопка закрытия
-            document.getElementById('close-btn').addEventListener('click', function() {
-                document.body.innerHTML = `
-                    <div style="
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: #000;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        color: #ff5555;
-                        font-family: 'DejaVu Sans Mono', monospace;
-                        font-size: 24px;
-                        z-index: 10000;
-                    ">
-                        Terminal session terminated
-                    </div>
-                `;
-            });
-            
-            // Кнопка сворачивания
-            document.getElementById('min-btn').addEventListener('click', function() {
-                const terminal = document.querySelector('.terminal-window');
-                terminal.style.transition = 'transform 0.3s ease';
-                terminal.style.transform = 'translateY(100vh)';
-                
-                setTimeout(function() {
-                    alert('Terminal minimized. Press OK to restore.');
-                    terminal.style.transform = 'translateY(0)';
-                }, 300);
-            });
-            
-            // Кнопка разворачивания
-            document.getElementById('max-btn').addEventListener('click', function() {
-                const terminal = document.querySelector('.terminal-window');
-                if (terminal.style.width === '100%') {
-                    terminal.style.width = '85%';
-                    terminal.style.height = '75vh';
-                } else {
-                    terminal.style.width = '100%';
-                    terminal.style.height = '100vh';
-                }
-            });
-            
-            // Симуляция ввода команды
-            setTimeout(function() {
-                const lastPrompt = document.getElementById('last-prompt');
-                const terminalContent = document.querySelector('.terminal-content');
-                
-                if (lastPrompt) {
-                    lastPrompt.innerHTML = 'root@kali:<span class="command">/usr/rootsprut#</span> ';
-                    
-                    const newPrompt = document.createElement('div');
-                    newPrompt.className = 'prompt root-prompt';
-                    newPrompt.innerHTML = 'root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span>';
-                    terminalContent.appendChild(newPrompt);
-                    
-                    terminalContent.scrollTop = terminalContent.scrollHeight;
-                    
-                    let i = 0;
-                    const cmd = 'echo "Cybersecurity portfolio project"';
-                    const cursor = '<span class="cursor"></span>';
-                    
-                    const typingInterval = setInterval(function() {
-                        if (i < cmd.length) {
-                            newPrompt.innerHTML = `root@kali:<span class="command">/usr/rootsprut#</span> ${cmd.substring(0, i+1)}${cursor}`;
-                            i++;
-                            terminalContent.scrollTop = terminalContent.scrollHeight;
-                        } else {
-                            clearInterval(typingInterval);
-                            
-                            const output = document.createElement('div');
-                            output.className = 'output';
-                            output.textContent = 'Cybersecurity portfolio project';
-                            newPrompt.insertAdjacentElement('afterend', output);
-                            
-                            const finalPrompt = document.createElement('div');
-                            finalPrompt.className = 'prompt root-prompt';
-                            finalPrompt.innerHTML = `root@kali:<span class="command">/usr/rootsprut#</span> <span class="cursor"></span>`;
-                            terminalContent.appendChild(finalPrompt);
-                            
-                            terminalContent.scrollTop = terminalContent.scrollHeight;
-                        }
-                    }, 100);
-                }
-            }, 3000);
-        }
+        // Кнопка сворачивания (просто скрываем терминал)
+        document.getElementById('min-btn').addEventListener('click', function() {
+            terminalContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+        });
+        
+        // Кнопка разворачивания (переключение полноэкранного режима)
+        document.getElementById('max-btn').addEventListener('click', function() {
+            const terminalWindow = document.querySelector('.terminal-window');
+            if (terminalWindow.style.width === '100%') {
+                terminalWindow.style.width = '';
+                terminalWindow.style.height = '90vh';
+            } else {
+                terminalWindow.style.width = '100%';
+                terminalWindow.style.height = '100vh';
+            }
+        });
     </script>
 </body>
 </html>
