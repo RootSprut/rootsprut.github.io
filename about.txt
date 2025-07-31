@@ -1,7 +1,8 @@
-Welcome to RootSprut's experemental website.
-Github-based information site.
+This is a RootSprut's experemental website.
+Only website.
 
-Specialty:Cybersecurity|Pentest
-GitHub:https://github.com/rootsprut
+Github:https://github.com/RootSprut
 Telegram:https://t.me/RootSprut
+Specialty:Cybersecurity\Pentest
 Name:RootSprut
+OS:Kali Linux
