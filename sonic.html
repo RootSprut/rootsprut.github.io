@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SONIC | Фильмы и сериалы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        :root {
+            --primary: #e50914;
+            --dark: #000;
+            --dark-gray: #1a1a1a;
+            --light-gray: #333;
+            --text: #fff;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Шапка */
+        header {
+            background: var(--dark);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-icon {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .camera-icon::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 15px;
+            height: 15px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+        }
+
+        .camera-icon::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav li a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        nav li a:hover, nav li a.active {
+            background: var(--primary);
+        }
+
+        /* Главная страница */
+        .hero {
+            min-height: 80vh;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), 
+                        url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #ddd;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #f40612;
+        }
+
+        /* Основной контент */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: none; /* Скрыто по умолчанию */
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* Грид с фильмами/сериалами */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .content-card {
+            background: var(--dark-gray);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid #333;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+            border-color: var(--primary);
+        }
+
+        .content-card img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            display: block;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .content-info {
+            padding: 15px;
+        }
+
+        .content-info h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+
+        .content-info p {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .watch-btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .watch-btn:hover {
+            background: #f40612;
+        }
+
+        /* Плеер */
+        .player-section {
+            background: var(--dark);
+            padding: 30px 20px;
+            display: none;
+        }
+
+        .player-section.active {
+            display: block;
+        }
+
+        .player-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--dark-gray);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--primary);
+        }
+
+        .video-container {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .video-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .back-btn {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Подвал */
+        footer {
+            background: #111;
+            padding: 30px 20px;
+            text-align: center;
+            border-top: 2px solid var(--primary);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .social-links a {
+            color: var(--text);
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            color: #777;
+            margin-top: 20px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 10px;
+            }
+            
+            nav li a {
+                font-size: 0.9rem;
+                padding: 5px;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            
+            .content-card img {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <a href="#" class="logo" onclick="showSection('home')">
+            <span class="camera-icon"></span>
+            SONIC
+        </a>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showSection('home')">Главная</a></li>
+                <li><a href="#" onclick="showSection('movies')">Фильмы</a></li>
+                <li><a href="#" onclick="showSection('series')">Сериалы</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Главная страница -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Добро пожаловать в <span>SONIC</span></h1>
+            <p>Новости: Новый сериал "Услуга Адвоката"</p>
+            <p></p>
+            <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                <a href="#" class="btn" onclick="showSection('movies')">Смотреть фильмы</a>
+                <a href="#" class="btn" onclick="showSection('series')">Смотреть сериалы</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Фильмы -->
+    <div id="movies" class="container">
+        <h2 class="section-title">Наши фильмы</h2>
+        <div class="content-grid">
+            <!-- Фильм 1 -->
+            <div class="content-card">
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Бесконечность">
+                <div class="content-info">
+                    <h3>KRINGEGEN</h3>
+                    <p>Фантастика, 2024 · 4 мин</p>
+                    <button class="watch-btn" data-id="movie1">Смотреть</button>
+                </div>
+            </div>
+            
+            <!-- Фильм 2 -->
+            <div class="content-card">
+                <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Эхо прошлого">
+                <div class="content-info">
+                    <h3>NERD 1 (Скоро)</h3>
+                    <p>Апокалипсис, 2025 · 8 мин</p>
+                    <button class="watch-btn" data-id="movie2">Смотреть</button>
+                </div>
+            </div>
+            
+            <!-- Фильм 3 -->
+            <div class="content-card">
+                <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Скорость света">
+                <div class="content-info">
+                    <h3>NERD 2 (Скоро)</h3>
+                    <p>Апокалипсис, 2026 · 16 мин</p>
+                    <button class="watch-btn" data-id="movie3">Смотреть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сериалы -->
+    <div id="series" class="container">
+        <h2 class="section-title">Наши сериалы</h2>
+        <div class="content-grid">
+            <!-- Сериал 1 -->
+            <div class="content-card">
+                <img src="https://images.unsplash.com/photo-1616530940355-351fabd952eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Город теней">
+                <div class="content-info">
+                    <h3>Услуга Адвоката</h3>
+                    <p>Детектив, 2025 · 8 серий</p>
+                    <button class="watch-btn" data-id="series1">Смотреть</button>
+                </div>
+            </div>
+            
+            <!-- Сериал 2 -->
+            <div class="content-card">
+                <img src="https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Лабиринт">
+                <div class="content-info">
+                    <h3>Бригада(Скоро)</h3>
+                    <p>Триллер, 2025 · 8 серий</p>
+                    <button class="watch-btn" data-id="series2">Смотреть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Плеер -->
+    <div id="player" class="player-section">
+        <div class="player-container">
+            <div class="video-container">
+                <iframe id="video-player" src="" allowfullscreen></iframe>
+            </div>
+            <div class="video-info">
+                <h2 class="video-title" id="video-title">Название фильма</h2>
+                <p class="video-description" id="video-description">Описание фильма появится здесь</p>
+                <a href="#" class="back-btn" onclick="hidePlayer()">← Назад к списку</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подвал -->
+    <footer>
+        <div class="logo" style="justify-content: center; margin-bottom: 15px;">
+            <span class="camera-icon"></span>
+            SONIC
+        </div>
+        
+        <div class="social-links">
+            <a href="#">YouTube</a>
+            <a href="#"></a>
+            <a href="#">Telegram</a>
+        </div>
+        
+        <p class="copyright">© 2021-2025 SONIC | sonic interactive </p>
+    </footer>
+
+    <script>
+        // Простые данные о фильмах и сериалах
+        const content = {
+            movie1: {
+                title: "KRINGEGEN",
+                description: "Приквел к легендарным фильмам NERD",
+                rutubeId: "bbfee5b27fecd331b2c52337e83d8cfd" // Замените на реальный ID Rutube
+            },
+            movie2: {
+                title: "NERD 1",
+                description: "Снимаем в декабре",
+                rutubeId: "9876543210"
+            },
+            movie3: {
+                title: "NERD 2",
+                description: "Снимаем в декабре",
+                rutubeId: "1122334455"
+            },
+            series1: {
+                title: "Услуга Адвоката",
+                description: "Снимаем в сентябре",
+                rutubeId: "5566778899"
+            },
+            series2: {
+                title: "Бригада",
+                description: "Пока что не снимаем",
+                rutubeId: "6677889900"
+            }
+        };
+
+        // Показываем нужный раздел
+        function showSection(sectionId) {
+            // Скрываем все контейнеры
+            document.querySelectorAll('.container, .player-section').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Показываем запрошенный раздел
+            if (sectionId === 'home') {
+                document.querySelector('.hero').style.display = 'flex';
+            } else {
+                document.querySelector('.hero').style.display = 'none';
+                document.getElementById(sectionId).classList.add('active');
+            }
+            
+            // Прокручиваем вверх
+            window.scrollTo(0, 0);
+        }
+
+        // Назначаем обработчики для кнопок "Смотреть"
+        document.querySelectorAll('.watch-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const contentId = this.dataset.id;
+                const contentData = content[contentId];
+                
+                if (contentData) {
+                    // Устанавливаем данные в плеер
+                    document.getElementById('video-title').textContent = contentData.title;
+                    document.getElementById('video-description').textContent = contentData.description;
+                    
+                    // Формируем ссылку для Rutube
+                    const player = document.getElementById('video-player');
+                    player.src = `https://rutube.ru/play/embed/${contentData.rutubeId}`;
+                    
+                    // Показываем плеер
+                    showSection('player');
+                }
+            });
+        });
+
+        // Функция скрытия плеера
+        function hidePlayer() {
+            // Возвращаемся к предыдущему разделу
+            if (document.getElementById('movies').classList.contains('active')) {
+                showSection('movies');
+            } else if (document.getElementById('series').classList.contains('active')) {
+                showSection('series');
+            } else {
+                showSection('home');
+            }
+            
+            // Останавливаем видео
+            document.getElementById('video-player').src = '';
+        }
+
+        // Инициализация - показываем главную страницу
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('home');
+        });
+    </script>
+</body>
+</html>
